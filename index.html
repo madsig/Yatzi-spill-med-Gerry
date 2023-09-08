@@ -5,229 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <style>
-        table,
-        tr,
-        td,
-        th {
-            border: 1px solid gray;
-            border-collapse: collapse;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-
-
     <div id="app"></div>
     <p>
-        Utvide yatzi spill<br />
+        Utvide yatzy spill<br />
     <ul>
         <li>Velge kombinasjoner</li>
         <li>trykke i tabellen</li>
         <li>sum poeng</li>
+        <li>la spilleren beholde terninger og kaste tre ganger</li>
         <li>flere spillere?</li>
     </ul>
     </p>
-
-    <script>
-        //model
-        let diceAmount = 5;
-        let roll = rollDice();
-        let frequencyTable = [];
-        let player1Score = [0,0,0,0,0,0,0,0,0,0] //1par, 2par, 3like, 4 like, liten straight, stor straight, hus, sjanse, yatzy
-        let resultArray = {}
-        const rowName = ['1 par', '2 par', '3 like', '4 like', 'Liten straight', 'Stor straight', 'Hus', 'Sjanse', 'Yatzi', 'Sum']
-        const rowId = ['1pair', '2pair', '3same', '4same', 'SmallStraight', 'BigStraight', 'House', 'Chance', 'Yatzi']
-
-        //view
-        show();
-        function show() {
-            checkRoll();
-            let HTML = createTable();
-            HTML += `<h1>${roll}</h1>`
-            document.getElementById('app').innerHTML = HTML;
-        }
-
-        function createTable(){
-            let table = /*HTML*/`
-                <table>
-                    <tr>
-                        <th>Yatzi</th>
-                        <th>Spiller 1</th>
-                    </tr>
-            `
-            for (i=0; i<rowName.length-1; i++){
-                table += /*HTML*/`
-                    <tr>
-                        <td>${rowName[i]}</td>
-                        <td onclick="getScore('${rowId[i]}', ${i})">${player1Score[i] == 0 ? '': player1Score[i]}</td>
-                    </tr>
-                `;
-            }
-            table += /*HTML*/`
-                    <tr>
-                        <th>Sum</th>
-                        <th></th>
-                    </tr>
-                `
-            return table;
-        }
-
-        function rollDice() {
-            let rolls = [];
-            for (let i = 0; i < diceAmount; i++) {
-                rolls.push(Math.floor(Math.random() * 6 + 1))
-            }
-            console.log(rolls)
-            return rolls;
-        }
-
-        function checkRoll() {
-            frequencyTable = new Array(diceAmount + 1).fill(0);
-            for (let die of roll) {
-                frequencyTable[die - 1]++;
-            }
-            console.log("FT: " + frequencyTable);
-            return checkResult(frequencyTable);
-        }
-
-        
-        function checkResult(array) {
-            resultArray['1pair'] = get1pair(array)
-            
-            resultArray['2pair'] = get2pair(array)
-            
-            resultArray['3same'] = get3same(array)
-            
-            resultArray['4same'] = get4same(array)
-
-            resultArray['SmallStraight'] = getStraight(array, 'small')
-
-            resultArray['BigStraight'] = getStraight(array, 'big')
-
-            resultArray['House'] = getHouse(array)
-
-            resultArray['Chance'] = getChance(array)
-
-            resultArray['Yatzi'] = getYatzi(array)
-
-            resultArray['Sum'] = getSum2(player1Score)
-            
-
-            console.log("Result Array "+ Object.entries(resultArray))
-        }
-        
-        function get1pair(array) {
-            let tempVar = 0;
-
-            for (i=0; i<array.length; i++) {
-                if(array[i] >=2){
-                    tempVar = i+1;
-                }
-            }
-            if (tempVar == 0) return tempVar
-            return (tempVar)*2
-        }
-        
-        function get2pair(array) {
-            let tempVar1 = 0;
-            let tempVar2 = 0;
-            
-            for (i=0; i<array.length; i++) {
-                if(array[i] >=2){
-                    if(tempVar1 == 0){tempVar1 = i+1}
-                    else{tempVar2 = i+1}
-                        
-                }
-                console.log("Tempvar1 og 2 = "+tempVar1, tempVar2)
-            }
-            if (tempVar2 == 0) return tempVar2
-            return ((tempVar1) + (tempVar2))*2
-        }
-
-        function get3same(array) {
-            let tempVar = 0;
-
-            for (i=0; i<array.length; i++) {
-                if(array[i] >=3){
-                    tempVar = i+1;
-                }
-            }
-            if (tempVar == 0) return tempVar
-            return (tempVar)*3
-        }
-
-        function get4same(array) {
-            let tempVar = 0;
-
-            for (i=0; i<array.length; i++) {
-                if(array[i] >=4){
-                    tempVar = i+1;
-                }
-            }
-            if (tempVar == 0) return tempVar
-            return (tempVar)*4
-        }
-
-        function getStraight(array, size) {
-            let count = array.reduce((acc, val) => (val === 1 ? acc + 1 : acc), 0);
-
-            if (count !=5) return 0;
-            switch (size){
-                case 'small':
-                    if(array[5] == 0) return 15
-                    else return 0;
-                    break;
-
-                case 'big':
-                    if(array[0] == 0) return 20
-                    else return 0;
-                    break;
-
-            }
-        }
-
-        function getHouse(array){
-            
-            if(array.includes(2) && array.includes(3)){
-                return resultArray['1pair'] + resultArray['3same']
-            }
-            return 0;
-        }
-        function getChance(array){
-            return getSum(roll)
-        }
-        function getYatzi(array){
-            if (array.includes(5)){
-                return 50;
-            }
-            return 0;
-        }
-
-        //     let count = arr.reduce((acc, val) => (val === num ? acc + 1 : acc), 0);
-
-        function getScore(id, index) {
-            //Denne kan hente ut relevant score fra resultatArray, og oppdatere riktig variabel, så reloade view.
-
-            player1Score[index] = resultArray[id];
-            player1Score[9] = resultArray['Sum']
-            show()
-        }
-
-        function getSum(arr){
-            const arraySum = arr.reduce((acc, curr) => acc + curr, 0);
-            return arraySum;
-        }
-        function getSum2(arr){
-            let arraySum = [...arr];
-            arraySum.pop();
-            arraySum = arraySum.reduce((acc, curr) => acc + curr, 0);
-            return arraySum;
-        }
-
-    </script>
-
+    <script src="combinationScript.js"></script>
+    <script src="scripts.js"></script>
 </body>
 
 </html>
