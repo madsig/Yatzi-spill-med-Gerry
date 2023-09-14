@@ -9,3 +9,20 @@ th {
 .number {
     text-align: center;
 }
+
+.diceBlocks {
+    display: flex;
+    font-size: 40px;
+}
+
+.diceBlocks > div {
+    cursor: pointer;
+}
+
+.diceBlocks > div:hover {
+    color: red;
+}
+
+.selected {
+    color: red;
+}
