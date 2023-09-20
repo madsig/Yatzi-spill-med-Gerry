@@ -8,18 +8,18 @@ let timesRolled = 0;
 let frequencyTable = [];
 let firstLoad = false
 let selectedClass = [false, false, false, false, false]
-let player1Score = [null, null, null, null, null, null, null, null, null, 0] //1par, 2par, 3like, 4 like, liten straight, stor straight, hus, sjanse, yatzy
+let player1Score = [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0] //1par, 2par, 3like, 4 like, liten straight, stor straight, hus, sjanse, yatzy
 let resultArray = {}
-const rowName = ['1 par', '2 par', '3 like', '4 like', 'Liten straight', 'Stor straight', 'Hus', 'Sjanse', 'Yatzy', 'Sum']
-const rowId = ['1pair', '2pair', '3same', '4same', 'SmallStraight', 'BigStraight', 'House', 'Chance', 'Yatzy']
+const rowName = ['Enere', 'Toere', 'Treere', 'Firere', 'Fememre', 'Seksere', '1 par', '2 par', '3 like', '4 like', 'Liten straight', 'Stor straight', 'Hus', 'Sjanse', 'Yatzy', 'Sum']
+const rowId = ['ones', 'twos', 'threes', 'fours', 'fives','sixes', '1pair', '2pair', '3same', '4same', 'SmallStraight', 'BigStraight', 'House', 'Chance', 'Yatzy',]
 let diceBlocks = '';
-
-
+let usedDice = false;
+let canRollAgain = true;
 
 //view
 show();
 function show() {
-    let HTML = `<div class="diceBlocks" >${displayDice(roll)}<button onclick="clickRollDice()">Kast terninger</button></div>`
+    let HTML = `<div class="diceBlocks" >${displayDice(roll)}<button ${!canRollAgain ? 'disabled' : 'a'} onclick="clickRollDice()" >Kast terninger</button></div>`
     HTML += createTable();
     document.getElementById('app').innerHTML = HTML;
 }
@@ -32,16 +32,35 @@ function createTable() {
                 <th>Spiller 1</th>
             </tr>
     `
-    for (i = 0; i < rowName.length - 1; i++) {
+    for (i=0; i<6; i++) {
         table += /*HTML*/`
             <tr>
                 <td>${rowName[i]}</td>
-                <td class="number" onclick="getScore('${rowId[i]}', ${i})">${player1Score[i] != null ? player1Score[i] : ''}</td>
+                <td style="background-color: ${player1Score[i] == null ? (resultArray[rowId[i]] > 0 ? 'LightGreen' : 'LightCoral') : 'white'}" class="number" onclick="setScore('${rowId[i]}', ${i})">${player1Score[i] == null ? '' : (player1Score[i] == 0 ? '―' : player1Score[i]) }</td>
             </tr>
         `;
     }
     table += /*HTML*/`
+        <tr style="border-top: solid gray 3px">
+            <th>Sum</td>
+            <th></td>
+        </tr>
+        <tr>
+            <th>Bonus</td>
+            <th></td>
+        <tr>
+    `
+
+    for (i = 6; i < rowName.length - 1; i++) {
+        table += /*HTML*/`
             <tr>
+                <td>${rowName[i]}</td>
+                <td style="background-color: ${player1Score[i] == null ? (resultArray[rowId[i]] > 0 ? 'LightGreen' : 'LightCoral') : 'white'}" class="number" onclick="setScore('${rowId[i]}', ${i})">${player1Score[i] == null ? '' : (player1Score[i] == 0 ? '―' : player1Score[i]) }</td>
+            </tr>
+        `;
+    }
+    table += /*HTML*/`
+            <tr style="border-top: solid gray 3px">
                 <th>${rowName[i]}</th>
                 <th>${player1Score[i]}</th>
             </tr>
@@ -69,18 +88,22 @@ function checkRoll() {
     return checkResult(frequencyTable);
 }
 
-function getScore(id, index) {
+function setScore(id, index) {
     //Denne kan hente ut relevant score fra resultatArray, og oppdatere riktig variabel, så reloade view.
+    if (usedDice) return;
     timesRolled = 0;
     if (player1Score[index] != null) return
     player1Score[index] = resultArray[id];
     resultArray['Sum'] = getSum2(player1Score);
-    player1Score[9] = resultArray['Sum'];
-    roll = rollDice();
-    checkRoll();
+    player1Score[15] = resultArray['Sum'];
+    //roll = rollDice();
+    //checkRoll(); 
+    selectedClass = [false, false, false, false, false]
+    usedDice = true;
+    canRollAgain = true;
     show();
 }
-
+    
 function getSum(arr) {
     const arraySum = arr.reduce((acc, curr) => acc + curr, 0);
     return arraySum;
@@ -103,6 +126,7 @@ function displayDice(arr) {
 }
 
 function clickDice(event) {
+    if(usedDice) return;
     id = event.target.id.charAt(3);
     
     if (selectedClass[id] === false){
@@ -118,8 +142,10 @@ function clickDice(event) {
 }
 
 function clickRollDice() {
-    if (timesRolled >= 3 || selectedClass.every(element => element === true)) return;
+    canRollAgain = !(timesRolled >= 2 || selectedClass.every(element => element === true));
+    console.log(canRollAgain)
     timesRolled++;
+    usedDice = false;
     roll = rollDice();
     checkRoll();
     show();

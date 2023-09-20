@@ -1,4 +1,17 @@
 function checkResult(array) {
+
+    resultArray['ones'] = getSingles(array, 1)
+
+    resultArray['twos'] = getSingles(array, 2)
+
+    resultArray['threes'] = getSingles(array, 3)
+
+    resultArray['fours'] = getSingles(array, 4)
+
+    resultArray['fives'] = getSingles(array, 5)
+
+    resultArray['sixes'] = getSingles(array, 6)
+
     resultArray['1pair'] = get1pair(array)
 
     resultArray['2pair'] = get2pair(array)
@@ -18,6 +31,11 @@ function checkResult(array) {
     resultArray['Yatzy'] = getYatzy(array)
 
     console.log("Result Array " + Object.entries(resultArray))
+}
+
+function getSingles(array, number) {
+    amount = array[number-1]
+    return amount * number;
 }
 
 function get1pair(array) {
