@@ -1,3 +1,4 @@
+//Midlertidig liste av alle mulige scores for hvert kast.
 function checkResult(array) {
 
     resultArray['ones'] = getSingles(array, 1)
@@ -30,11 +31,12 @@ function checkResult(array) {
 
     resultArray['Yatzy'] = getYatzy(array)
 
-    console.log("Result Array " + Object.entries(resultArray))
+    console.log("%cResult array ↓", "color: red")
+    console.log(resultArray)
 }
 
 function getSingles(array, number) {
-    amount = array[number-1]
+    amount = array[number - 1]
     return amount * number;
 }
 
@@ -58,9 +60,7 @@ function get2pair(array) {
         if (array[i] >= 2) {
             if (tempVar1 == 0) { tempVar1 = i + 1 }
             else { tempVar2 = i + 1 }
-
         }
-        console.log("Tempvar1 og 2 = " + tempVar1, tempVar2)
     }
     if (tempVar2 == 0) return tempVar2
     return ((tempVar1) + (tempVar2)) * 2
@@ -104,7 +104,6 @@ function getStraight(array, size) {
             if (array[0] == 0) return 20
             else return 0;
             break;
-
     }
 }
 
@@ -116,7 +115,7 @@ function getHouse(array) {
     return 0;
 }
 function getChance(array) {
-    return getSum(roll)
+    return roll.reduce((acc, curr) => acc + curr, 0);
 }
 function getYatzy(array) {
     if (array.includes(5)) {
