@@ -1,38 +1,39 @@
 //Midlertidig liste av alle mulige scores for hvert kast.
 function checkResult(array) {
+    let resultObject = model.result.resultObject;
 
-    resultArray['ones'] = getSingles(array, 1)
+    resultObject['ones'] = getSingles(array, 1);
 
-    resultArray['twos'] = getSingles(array, 2)
+    resultObject['twos'] = getSingles(array, 2);
 
-    resultArray['threes'] = getSingles(array, 3)
+    resultObject['threes'] = getSingles(array, 3);
 
-    resultArray['fours'] = getSingles(array, 4)
+    resultObject['fours'] = getSingles(array, 4);
 
-    resultArray['fives'] = getSingles(array, 5)
+    resultObject['fives'] = getSingles(array, 5);
 
-    resultArray['sixes'] = getSingles(array, 6)
+    resultObject['sixes'] = getSingles(array, 6);
 
-    resultArray['1pair'] = get1pair(array)
+    resultObject['1pair'] = get1pair(array);
 
-    resultArray['2pair'] = get2pair(array)
+    resultObject['2pair'] = get2pair(array);
 
-    resultArray['3same'] = get3same(array)
+    resultObject['3same'] = get3same(array);
 
-    resultArray['4same'] = get4same(array)
+    resultObject['4same'] = get4same(array);
 
-    resultArray['SmallStraight'] = getStraight(array, 'small')
+    resultObject['SmallStraight'] = getStraight(array, 'small');
 
-    resultArray['BigStraight'] = getStraight(array, 'big')
+    resultObject['BigStraight'] = getStraight(array, 'big');
 
-    resultArray['House'] = getHouse(array)
+    resultObject['House'] = getHouse(array);
 
-    resultArray['Chance'] = getChance(array)
+    resultObject['Chance'] = getChance(array);
 
-    resultArray['Yatzy'] = getYatzy(array)
+    resultObject['Yatzy'] = getYatzy(array);
 
-    console.log("%cResult array ↓", "color: red")
-    console.log(resultArray)
+    console.log("%cResult array ↓", "color: red");
+    console.log(resultObject);
 }
 
 function getSingles(array, number) {
@@ -108,15 +109,17 @@ function getStraight(array, size) {
 }
 
 function getHouse(array) {
-
+    let resultObject = model.result.resultObject;
     if (array.includes(2) && array.includes(3)) {
-        return resultArray['1pair'] + resultArray['3same']
+        return resultObject['1pair'] + resultObject['3same']
     }
     return 0;
 }
+
 function getChance(array) {
-    return roll.reduce((acc, curr) => acc + curr, 0);
+    return model.result.roll.reduce((acc, curr) => acc + curr, 0);
 }
+
 function getYatzy(array) {
     if (array.includes(5)) {
         return 50;
