@@ -15,66 +15,108 @@ function show() {
 
 function createTable() {
     let rowName = model.structure.rowName;
-    let rowId  = model.structure.rowId;
-    let resultObject = model.result.resultObject;
-    let player1Score = model.players.player1.score;
-    let player2Score = model.players.player2.score;
-    let currentPlayer = model.players.currentPlayer;
+    // let rowId = model.structure.rowId;
+    // let resultObject = model.result.resultObject;
+    // let player1Score = model.players.playerList[0].score;
+    // let player2Score = model.players.playerList[1].score;
+    // let currentPlayer = model.players.currentPlayer;
+
     let table = /*HTML*/`
         <table>
             <tr>
                 <th>Yatzy</th>
-                <th>Spiller 1</th>
-                <th>Spiller 2</th>
+                ${generateHeaders()}
             </tr>
     `
     for (i = 0; i < 6; i++) {
-        let style1 = player1Score[i] == null ? (resultObject[rowId[i]] > 0 ? 'LightGreen' : 'LightCoral') : 'white';
-        let style2 = player2Score[i] == null ? (resultObject[rowId[i]] > 0 ? 'LightGreen' : 'LightCoral') : 'white';
-        let score1 = player1Score[i] == null ? '' : (player1Score[i] == 0 ? '―' : player1Score[i]);
-        let score2 = player2Score[i] == null ? '' : (player2Score[i] == 0 ? '―' : player2Score[i]);
         table += /*HTML*/`
             <tr>
                 <td>${rowName[i]}</td>
-                <td style="background-color: ${currentPlayer == 0 ? style1 : ""}" class="number" onclick="setScore('${rowId[i]}', ${i}, 0)"> ${score1} </td>
-                <td style="background-color: ${currentPlayer == 1 ? style2 : ""}" class="number" onclick="setScore('${rowId[i]}', ${i}, 1)"> ${score2} </td>
+                ${generatePlayers(i)}
             </tr>
         `;
     }
     table += /*HTML*/`
-        <tr style="border-top: solid gray 3px">
-            <th>Sum</td>
-            <th>${checkBonus(player1Score)}</td>
-            <th>${checkBonus(player2Score)}</td>
-        </tr>
-        <tr>
-            <th>Bonus</td>
-            <th>${player1Score[6] || "0"}</td>
-            <th>${player2Score[6] || "0"}</td>
-        <tr>
+        ${generateSubHeader()}
     `
 
     for (i = 7; i < rowName.length - 1; i++) {
-        let style1 = player1Score[i] == null ? (resultObject[rowId[i]] > 0 ? 'LightGreen' : 'LightCoral') : 'white';
-        let style2 = player2Score[i] == null ? (resultObject[rowId[i]] > 0 ? 'LightGreen' : 'LightCoral') : 'white';
-        let score1 = player1Score[i] == null ? '' : (player1Score[i] == 0 ? '―' : player1Score[i]);
-        let score2 = player2Score[i] == null ? '' : (player2Score[i] == 0 ? '―' : player2Score[i]);
+
         table += /*HTML*/`
             <tr>
                 <td>${rowName[i]}</td>
-                <td style="background-color: ${currentPlayer == 0 ? style1:""}" class="number" onclick="setScore('${rowId[i]}', ${i}, 0)"> ${score1} </td>
-                <td style="background-color: ${currentPlayer == 1 ? style2:""}" class="number" onclick="setScore('${rowId[i]}', ${i}, 1)"> ${score2} </td>
+                ${generatePlayers(i)}
+               
             </tr>
         `;
     }
     table += /*HTML*/`
             <tr style="border-top: solid gray 3px">
                 <th>${rowName[i]}</th>
-                <th>${player1Score[i]}</th>
-                <th>${player2Score[i]}</th>
+                ${generateSum()}
             </tr>
         `
     return table;
+}
+
+function generateHeaders() {
+    let headersHtml = '';
+    for (i=0; i<model.players.playerCount; i++) {
+        headersHtml += /*HTML*/`
+            <th>${model.players.playerList[i].name}</th>
+        `
+    }
+    return headersHtml;
+}
+
+function generatePlayers(index) {
+    let playersHtml = '';
+    for (j = 0; j < model.players.playerCount; j++) {
+        let currentPlayerObject = model.players.playerList[j];
+        let score = currentPlayerObject.score[index] == null ? '' : (currentPlayerObject.score[index] == 0 ? '―' : currentPlayerObject.score[index]);
+        let style = currentPlayerObject.score[index] == null ? (model.result.resultObject[model.structure.rowId[index]] > 0 ? model.structure.colorGreen : model.structure.colorRed) : 'white';
+        
+        playersHtml += /*HTML*/`
+           <td style="background-color: ${model.players.currentPlayer == j ? style : ''}" class="number" onclick="setScore('${model.structure.rowId[index]}', ${index},${j})"> ${score} </td>`  
+    }
+    return playersHtml;
+}
+
+function generateSubHeader() {
+    let sumRowHtml = /*HTML*/`
+        <tr style="border-top: solid gray 3px">
+            <th>Sum</td>
+    `
+    for (i=0; i<model.players.playerCount; i++) {
+        sumRowHtml+= /*HTML*/`
+            <th>${checkBonus(model.players.playerList[i].score)}</td>
+        `
+    }
+    sumRowHtml += /*HTML*/`</tr>`
+
+    let bonusRowHtml = /*HTML*/`
+        <tr>
+            <th>Bonus</td>
+    `
+    for (i=0; i<model.players.playerCount; i++) {
+        bonusRowHtml+= /*HTML*/`
+            <th>${model.players.playerList[i].score[6] || "0"}</td>
+        `
+    }
+    sumRowHtml += /*HTML*/`</tr>`
+
+    let subHeaderBonus = sumRowHtml + bonusRowHtml;
+    return subHeaderBonus;
+}
+
+function generateSum() {
+    let sumHtml = '';
+    for (i=0; i<model.players.playerCount; i++) {
+        sumHtml+= /*HTML*/`
+            <th>${getTotalSum(model.players.playerList[i].score)}</th>
+        `
+    }
+    return sumHtml
 }
 
 //Ruller terning, og returnerer en liste med terningsverdier.
@@ -102,18 +144,10 @@ function generateFrequencyTable() {
 
 //Denne kan hente ut relevant score fra resultatArray, og oppdatere riktig variabel, så reloade view.
 function setScore(id, index, playerIndex) {
+    console.log("Set score kallet")
     if (playerIndex != model.players.currentPlayer) return;
     let score;
-    switch(model.players.currentPlayer){
-        case 0:
-            score = model.players.player1.score;
-            console.log("player 1");
-            break;
-        case 1:
-            score = model.players.player2.score;
-            console.log("player 2")
-            break;
-    }
+    score = model.players.playerList[model.players.currentPlayer].score;
 
     if (model.dice.usedDice || score[index] != null) return;
 
@@ -130,7 +164,7 @@ function setScore(id, index, playerIndex) {
 function getTotalSum(arr) {
     let arraySum = arr.slice(0, arr.length - 1)
     arraySum = arraySum.reduce((acc, curr) => acc + curr, 0);
-    
+
     return arraySum;
 }
 
@@ -138,7 +172,7 @@ function getTotalSum(arr) {
 function displayDice(arr) {
     diceBlocks = '';
     for (let i = 0; i < arr.length; i++) {
-        diceBlocks += `<div ${model.dice.selectedClass[i] ? 'class="selected"' : ''} onclick="clickDice(event)" id="die${i}">${model.constants.dice[arr[i]]}</div>`
+        diceBlocks += /*HTML*/ `<div ${model.dice.selectedClass[i] ? 'class="selected"' : ''} onclick="clickDice(event)" id="die${i}">${model.constants.dice[arr[i]]}</div>`
     }
     return diceBlocks;
 }
@@ -176,9 +210,8 @@ function clickRollDice() {
 function checkBonus(array, SumOrBonus) {
     let firstScoresArray = array.slice(0, 6);
     let firstScoresSum = firstScoresArray.reduce((sum, value) => sum + value, 0);
-    if (firstScoresSum >= 63) //&& !firstScoresArray.includes(null)) 
-    {
-        model.players.player1.score[6] = 50;
+    if (firstScoresSum >= 63) {
+        model.players.playerList[model.players.currentPlayer].score[6] = 50;
     }
     return firstScoresSum;
 }
@@ -193,7 +226,7 @@ function resetTurn() {
     let dice = model.dice;
     console.log(model.players.currentPlayer);
     dice.timesRolled = 0;
-    model.players.currentPlayer = (model.players.currentPlayer + 1) % 2
+    model.players.currentPlayer = (model.players.currentPlayer + 1) % model.players.playerCount;
     dice.selectedClass = [false, false, false, false, false]
     dice.heldDice = [null, null, null, null, null];
     dice.usedDice = true;

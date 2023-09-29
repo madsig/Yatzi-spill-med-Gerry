@@ -4,6 +4,7 @@ td,
 th {
     border: 1px solid gray;
     border-collapse: collapse;
+    min-width: 80px;
 }
 
 .number {

@@ -2,6 +2,8 @@ let model = {
     structure: {
         rowName: ['Enere', 'Toere', 'Treere', 'Firere', 'Fememre', 'Seksere', 'Bonus', '1 par', '2 par', '3 like', '4 like', 'Liten straight', 'Stor straight', 'Hus', 'Sjanse', 'Yatzy', 'Sum'],
         rowId: ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes', 'Bonus', '1pair', '2pair', '3same', '4same', 'SmallStraight', 'BigStraight', 'House', 'Chance', 'Yatzy',],
+        colorGreen: "rgb(222, 250, 222);",
+        colorRed: "rgb(240, 177, 197);",
     },
     result: {
         roll: [],
@@ -9,17 +11,26 @@ let model = {
         resultObject: {}
     },
     players: {
+        playerCount: 4,
         currentPlayer: 0,
-        player1: {
-            id: 1,
-            name: "",
-            score: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0], //1par, 2par, 3like, 4 like, liten straight, stor straight, hus, sjanse, yatzy
-        },
-        player2: {
-            id: 2,
-            name: '',
-            score: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0], 
-        }
+        playerList: [
+            player1 = {
+                name: "Navn ",
+                score: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0], //1par, 2par, 3like, 4 like, liten straight, stor straight, hus, sjanse, yatzy
+            },
+            player2 = {
+                name: 'Per ',
+                score: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0], 
+            },
+            player3 = {
+                name: 'Tore ',
+                score: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0], 
+            },
+            player4 = {
+                name: 'Pål',
+                score: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0], 
+            },
+        ]
     },
     dice: {
         heldDice: [],
